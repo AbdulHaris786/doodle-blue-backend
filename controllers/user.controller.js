@@ -12,8 +12,8 @@ class UserController {
         return res.status(400).json({ message: "Role must be 'student' or 'faculty'" });
       }
 
-      const user = await userServices.signup({ name, email, password, role });
-      res.status(201).json({ message: "Signup successful", user });
+      const result = await userServices.signup({ name, email, password, role });
+      res.status(201).json({ message: "Signup successful", ...result });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -101,7 +101,7 @@ class UserController {
     }
   }
 
-  // 8. Delete student: Soft delete only, allowed for faculty
+  // 8. Delete student: Hard delete, allowed for faculty
   async deleteStudent(req, res) {
     try {
       const { id } = req.params;
@@ -110,7 +110,7 @@ class UserController {
       }
       const deleted = await userServices.softDelete(id);
       if (!deleted) return res.status(404).json({ message: "Student not found" });
-      res.status(200).json({ message: "Student soft-deleted successfully" });
+      res.status(200).json({ message: "Student deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

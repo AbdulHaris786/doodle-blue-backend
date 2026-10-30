@@ -10,9 +10,11 @@ class UserService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword, role });
     
+    const token = generateToken({ id: user._id, email: user.email, role: user.role });
+
     const userObj = user.toObject();
     delete userObj.password;
-    return userObj;
+    return { user: userObj, token };
   }
 
   async login(email, password) {
@@ -59,11 +61,7 @@ class UserService {
   }
 
   async softDelete(id) {
-    return User.findOneAndUpdate(
-      { _id: id, isDeleted: false },
-      { isDeleted: true },
-      { returnDocument: "after" }
-    );
+    return User.findByIdAndDelete(id);
   }
 }
 
